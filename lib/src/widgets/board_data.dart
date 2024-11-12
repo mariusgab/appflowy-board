@@ -60,6 +60,7 @@ class AppFlowyBoardController extends ChangeNotifier
     this.onMoveGroupItem,
     this.onMoveGroupItemToGroup,
     this.onStartDraggingCard,
+    this.onScrollToBottom
   });
 
   final List<AppFlowyGroupData> _groupDatas = [];
@@ -76,6 +77,8 @@ class AppFlowyBoardController extends ChangeNotifier
   final OnMoveGroupItemToGroup? onMoveGroupItemToGroup;
 
   final OnStartDraggingCard? onStartDraggingCard;
+
+  final Function(String)? onScrollToBottom;
 
   /// Returns the unmodifiable list of [AppFlowyGroupData]
   UnmodifiableListView<AppFlowyGroupData> get groupDatas =>

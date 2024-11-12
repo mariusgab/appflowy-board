@@ -305,6 +305,7 @@ class _AppFlowyBoardContentState extends State<_AppFlowyBoardContent> {
                 dragTargetKeys: widget.boardState,
                 reorderFlexAction: reorderFlexAction,
                 stretchGroupHeight: widget.config.stretchGroupHeight,
+                onScrollToBottom: widget.boardController.onScrollToBottom,
                 onDragStarted: (index) {
                   widget.boardController.onStartDraggingCard
                       ?.call(columnData.id, index);

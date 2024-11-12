@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
 
 import 'package:flutter/material.dart';
 
@@ -81,6 +82,8 @@ class AppFlowyBoardGroup extends StatefulWidget {
     this.cornerRadius = 0.0,
     this.backgroundColor = Colors.transparent,
     this.stretchGroupHeight = true,
+
+    this.onScrollToBottom
   }) : config = const ReorderFlexConfig();
 
   final AppFlowyBoardCardBuilder cardBuilder;
@@ -103,6 +106,8 @@ class AppFlowyBoardGroup extends StatefulWidget {
   final Color backgroundColor;
   final bool stretchGroupHeight;
   final ReorderFlexConfig config;
+
+  final Function(String)? onScrollToBottom;
 
   String get groupId => dataSource.groupData.id;
 
@@ -138,38 +143,48 @@ class _AppFlowyBoardGroupState extends State<AppFlowyBoardGroup> {
           draggableTargetBuilder: PhantomDraggableBuilder(),
         );
 
+
         final reorderFlex = Flexible(
           fit: widget.stretchGroupHeight ? FlexFit.tight : FlexFit.loose,
           child: Padding(
             padding: widget.bodyPadding,
-            child: SingleChildScrollView(
-              scrollDirection: widget.config.direction,
-              controller: widget.scrollController,
-              child: ReorderFlex(
-                key: ValueKey(widget.groupId),
-                dragStateStorage: widget.dragStateStorage,
-                dragTargetKeys: widget.dragTargetKeys,
-                scrollController: widget.scrollController,
-                config: widget.config,
-                onDragStarted: (index) {
-                  widget.phantomController.groupStartDragging(widget.groupId);
-                  widget.onDragStarted?.call(index);
-                },
-                onReorder: (fromIndex, toIndex) {
-                  if (widget.phantomController.shouldReorder(widget.groupId)) {
-                    widget.onReorder(widget.groupId, fromIndex, toIndex);
-                    widget.phantomController.updateIndex(fromIndex, toIndex);
-                  }
-                },
-                onDragEnded: () {
-                  widget.phantomController.groupEndDragging(widget.groupId);
-                  widget.onDragEnded?.call(widget.groupId);
-                  widget.dataSource.debugPrint();
-                },
-                dataSource: widget.dataSource,
-                interceptor: interceptor,
-                reorderFlexAction: widget.reorderFlexAction,
-                children: children,
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (scrollInfo) {
+                if (scrollInfo.metrics.pixels ==
+                    scrollInfo.metrics.maxScrollExtent) {
+                  widget.onScrollToBottom?.call(this.widget.groupId);
+                }
+                return false;
+              },
+              child: SingleChildScrollView(
+                scrollDirection: widget.config.direction,
+                controller: widget.scrollController,
+                child: ReorderFlex(
+                  key: ValueKey(widget.groupId),
+                  dragStateStorage: widget.dragStateStorage,
+                  dragTargetKeys: widget.dragTargetKeys,
+                  scrollController: widget.scrollController,
+                  config: widget.config,
+                  onDragStarted: (index) {
+                    widget.phantomController.groupStartDragging(widget.groupId);
+                    widget.onDragStarted?.call(index);
+                  },
+                  onReorder: (fromIndex, toIndex) {
+                    if (widget.phantomController.shouldReorder(widget.groupId)) {
+                      widget.onReorder(widget.groupId, fromIndex, toIndex);
+                      widget.phantomController.updateIndex(fromIndex, toIndex);
+                    }
+                  },
+                  onDragEnded: () {
+                    widget.phantomController.groupEndDragging(widget.groupId);
+                    widget.onDragEnded?.call(widget.groupId);
+                    widget.dataSource.debugPrint();
+                  },
+                  dataSource: widget.dataSource,
+                  interceptor: interceptor,
+                  reorderFlexAction: widget.reorderFlexAction,
+                  children: children,
+                ),
               ),
             ),
           ),

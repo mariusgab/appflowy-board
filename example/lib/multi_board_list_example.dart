@@ -34,6 +34,13 @@ class _MultiBoardListExampleState extends State<MultiBoardListExample> {
       RichTextItem(title: "Card 3", subtitle: 'Aug 1, 2020 4:05 PM'),
       TextItem("Card 4"),
       TextItem("Card 5"),
+      TextItem("Card 5"),
+      TextItem("Card 5"),
+      TextItem("Card 5"),
+      TextItem("Card 5"),
+      TextItem("Card 5"),
+      TextItem("Card 5"),
+      TextItem("Card 5"),
     ]);
 
     final group2 = AppFlowyGroupData(
